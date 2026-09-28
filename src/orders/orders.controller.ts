@@ -27,6 +27,11 @@ export class OrdersController {
     return this.ordersService.checkout(checkoutDto);
   }
 
+  @Post('checkout2')
+  onCheckout2(@Body() checkoutDto: CheckoutDto) {
+    return this.ordersService.checkout2(checkoutDto);
+  }
+
   @Get()
   findAll() {
     return this.ordersService.findAll();

@@ -31,6 +31,10 @@ export class OrdersService {
     );
   }
 
+  checkout2(checkout: CheckoutDto) {
+    return this.ordersClient.send('ORDERS.CHECKOUT2', { ...checkout });
+  }
+
   findAll() {
     return `This action returns all orders`;
   }
