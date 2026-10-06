@@ -1,6 +1,4 @@
 import {
-  HttpException,
-  HttpStatus,
   Inject,
   Injectable,
   NotAcceptableException,
@@ -10,12 +8,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ClientProxy } from '@nestjs/microservices';
 import { catchError, lastValueFrom, map, throwError, timeout } from 'rxjs';
+import { Payload } from './interfaces/payload.interface';
 
 @Injectable()
 export class UsersService {
   constructor(@Inject('USERS_SERVICE') private usersClient: ClientProxy) {}
 
-  create(createUserDto) {
+  create(createUserDto: CreateUserDto) {
     return this.usersClient.send('USERS.CREATEONE', createUserDto).pipe(
       catchError((error: Error) => {
         return throwError(() => new NotAcceptableException(error.message));
@@ -23,16 +22,21 @@ export class UsersService {
     );
   }
 
-  login() {
-    this.usersClient.emit('USERS.LOGIN', {});
+  loginNotif() {
+    this.usersClient.emit('USERS.LOGINNOTIF', {});
+  }
+
+  login(user) {
+    return this.usersClient.send('USERS.LOGIN', user);
   }
 
   findAll() {
     return this.usersClient.send('USERS.FINDALL', {});
   }
 
-  findOne(uuid: string) {
-    return this.usersClient.send('USERS.GETONE', { uuid: uuid }).pipe(
+  findOne(userData: { uuid?: string; username?: string; id?: number }) {
+    return this.usersClient.send('USERS.GETONE', userData).pipe(
+      timeout(10000),
       map((user) => {
         delete user.password;
         delete user.id;
@@ -41,6 +45,21 @@ export class UsersService {
       catchError((error: Error) => {
         return throwError(() => new NotFoundException(error.message));
       }),
+    );
+  }
+
+  async validateLocal(username: string, password: string) {
+    return await lastValueFrom(
+      this.usersClient.send('USERS.VALIDATE_LOCAL', {
+        username: username,
+        password: password,
+      }),
+    );
+  }
+
+  async validateJwt(payload: Payload) {
+    return await lastValueFrom(
+      this.usersClient.send('USERS.VALIDATE_JWT', payload),
     );
   }
 

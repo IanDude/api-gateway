@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ShowsModule } from './shows/shows.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     }),
     UsersModule,
     OrdersModule,
+    ShowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

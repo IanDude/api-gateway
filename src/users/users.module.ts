@@ -2,6 +2,10 @@ import { Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './guards/strategies/local.strategy';
+import { AccessTokenStrategy } from './guards/strategies/jwt-access.strategy';
 
 @Module({
   imports: [
@@ -21,8 +25,11 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       ],
     }),
+    PassportModule,
+    JwtModule.register({}),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, LocalStrategy, AccessTokenStrategy],
+  exports: [UsersService],
 })
 export class UsersModule {}

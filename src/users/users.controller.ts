@@ -6,26 +6,33 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { LocalAuthGuard } from './guards/local.guard';
+import { AccessTokenGuard } from './guards/access-jwt.guard';
+import type { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto) {
+  create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  login() {
-    this.usersService.login();
-    return { message: 'Login Successful' };
+  login(@Req() req: Request) {
+    this.usersService.loginNotif();
+    return this.usersService.login(req.user);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -38,7 +45,7 @@ export class UsersController {
 
   @Get(':uuid')
   findOne(@Param('uuid') uuid: string) {
-    return this.usersService.findOne(uuid);
+    return this.usersService.findOne({ uuid: uuid });
   }
 
   @Patch(':id')
