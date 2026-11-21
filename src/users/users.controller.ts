@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,8 +16,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AccessTokenGuard } from './guards/access-jwt.guard';
 import type { Request } from 'express';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('users')
+@UseInterceptors(CacheInterceptor)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

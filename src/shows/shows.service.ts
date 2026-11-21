@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateShowDto } from './dto/create-show.dto';
 import { UpdateShowDto } from './dto/update-show.dto';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { catchError, throwError, timeout } from 'rxjs';
+import { catchError, lastValueFrom, throwError, timeout } from 'rxjs';
 
 @Injectable()
 export class ShowsService {
@@ -10,6 +10,14 @@ export class ShowsService {
 
   create(createShowDto: CreateShowDto) {
     return 'This action adds a new show';
+  }
+
+  bookSeat(seatId: string, userId: number) {
+    console.log('Starting bookSeat method');
+    return this.showsService.send('SHOWS.BOOK_SEAT', {
+      seatId: seatId,
+      userId: userId,
+    });
   }
 
   findAll() {

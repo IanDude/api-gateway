@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ShowsModule } from './shows/shows.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -33,6 +35,10 @@ import { ShowsModule } from './shows/shows.module';
     UsersModule,
     OrdersModule,
     ShowsModule,
+    CacheModule.register({ isGlobal: true }),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 60000, limit: 10 }],
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
